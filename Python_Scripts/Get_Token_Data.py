@@ -8,15 +8,16 @@ class RequestTokenData:
     def __init__(self):
         self.api_key = ''
         self.api_secret = ''
-        self.time_frame = ['1d', '1h']
-        self.directory_path = ['/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Token_daily_db/',
-                               '/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Token_hour_db/']
+        self.time_frame = ['1d', '1h', '1m']
+        self.directory_path = ['/Users/rodrigow/PycharmProjects/Launchpad_Binance/Token_daily_db/',
+                               '/Users/rodrigow/PycharmProjects/Launchpad_Binance/Token_hour_db/',
+                               '/Users/rodrigow/PycharmProjects/Launchpad_Binance/Token_minute_db/']
 
     def initialize(self, token_name, time_frame, csv_name):
         """
 
         :param token_name: token name to get data from Binance API
-        :param time_frame: time frame that you want the token informations
+        :param time_frame: time frame that you want the token informationsƒ
         :param csv_name: csv file name to save the data
         :return:
         """
@@ -52,12 +53,32 @@ class RequestTokenData:
                 f.write(f'{key}:{value}')
         return f'File {text_file_name}.txt saved successfully.'
 
+    def get_minute_db(self):
+        """
+
+                :return: get minute db of launchpad tokens
+                """
+        data = pd.read_csv('/Users/rodrigow/PycharmProjects/Launchpad_Binance/Launchpad_db/Binance_Launchpad.csv')
+        token_list = list(data.iloc[:, 1])
+        index_dict = dict()
+        for token in token_list:
+            print(f'{token_list.index(token)}/{len(token_list)}')
+            try:
+                token_name = (token + 'BNB')
+                RequestTokenData().initialize(token_name, self.time_frame[2], ((self.directory_path[2]) + token_name))
+                index_dict[token] = 'BNB'
+            except BinanceAPIException:
+                token_name = (token + 'USDT')
+                RequestTokenData().initialize(token_name, self.time_frame[2], ((self.directory_path[2]) + token_name))
+                index_dict[token] = 'USDT'
+        return index_dict
+
     def get_daily_db(self):
         """
 
         :return: get daily db of launchpad tokens
         """
-        data = pd.read_csv('/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Launchpad_db/Binance_Launchpad.csv')
+        data = pd.read_csv('/Users/rodrigow/PycharmProjects/Launchpad_Binance/Launchpad_db/Binance_Launchpad.csv')
         token_list = list(data.iloc[:, 1])
         index_dict = dict()
         for token in token_list:
@@ -69,7 +90,6 @@ class RequestTokenData:
                 token_name = (token + 'USDT')
                 RequestTokenData().initialize(token_name, self.time_frame[0], ((self.directory_path[0])+token_name))
                 index_dict[token] = 'USDT'
-        RequestTokenData().save_dict_txt('/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Dict_indexes/Index_Daily_Dict', index_dict)
         return index_dict
 
     def get_hour_db(self):
@@ -77,7 +97,7 @@ class RequestTokenData:
 
         :return: get hour db of launchpad tokens
         """
-        data = pd.read_csv('/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Launchpad_db/Binance_Launchpad.csv')
+        data = pd.read_csv('/Users/rodrigow/PycharmProjects/Launchpad_Binance/Launchpad_db/Binance_Launchpad.csv')
         token_list = list(data.iloc[:, 1])
         index_dict = dict()
         for token in token_list:
@@ -89,14 +109,11 @@ class RequestTokenData:
                 token_name = (token + 'USDT')
                 RequestTokenData().initialize(token_name, self.time_frame[1], ((self.directory_path[1]) + token_name))
                 index_dict[token] = 'USDT'
-        RequestTokenData().save_dict_txt('/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Dict_indexes/Index_Hour_Dict', index_dict)
         return index_dict
 
 
 if __name__ == '__main__':
-    RequestTokenData().get_hour_db()
-    RequestTokenData().get_daily_db()
-    RequestTokenData().initialize('BNBUSDT', '1d', '/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Token_Transform_db/Daily_BNBUSDT')
-    RequestTokenData().initialize('BNBUSDT', '1h', '/Users/rodrigow/PycharmProjects/launchpad_binance_r1/Token_Transform_db/Hour_BNBUSDT')
+    RequestTokenData().get_minute_db()
+    RequestTokenData().initialize('BNBUSDT', '1m', '/Users/rodrigow/PycharmProjects/Launchpad_Binance/Token_Transform_db/Minute_BNBUSDT')
 
 
