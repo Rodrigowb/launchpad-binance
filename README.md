@@ -25,5 +25,5 @@ Calculate the historical results of the tokens, using the available pair (Token/
 4. BeautifullSoup
 5. Pandas
 6. Selenium
-
+7. Binance API
 
